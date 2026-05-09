@@ -1,0 +1,90 @@
+PROYECTO JEFIT - RESUMEN DE CAMBIOS
+===================================
+
+He dejado el proyecto preparado para que puedas copiar la carpeta y trabajar directamente con Laravel.
+La base de datos está configurada con SQLite para que no dependas de crear una base de datos MySQL manualmente.
+
+DATOS DE ACCESO AL PANEL ADMIN
+------------------------------
+URL: /login
+Email: admin@jefit.com
+Contraseña: 12345678
+
+CAMBIOS IMPORTANTES
+-------------------
+1. Se ha unificado la estructura de las vistas usando resources/views/layouts/app.blade.php.
+   Así todas las páginas comparten el mismo menú, footer, Bootstrap y estilos generales.
+
+2. La calculadora IMC ahora valida datos realistas:
+   - Peso permitido: 30 kg a 300 kg.
+   - Altura permitida: 120 cm a 230 cm.
+   Esto evita resultados absurdos, por ejemplo una altura de 890 cm.
+
+3. El panel de administración ya es funcional:
+   - Listar suplementos.
+   - Crear suplementos.
+   - Editar suplementos.
+   - Borrar suplementos.
+
+4. El formulario de contacto ahora valida los campos y muestra un mensaje de confirmación.
+   De momento no guarda mensajes en base de datos porque no existía una tabla de contactos.
+
+5. Se han añadido comentarios explicativos en las partes principales del código.
+   Los comentarios están escritos de forma sencilla para que se entiendan y no parezcan demasiado artificiales.
+
+6. Se ha preparado database/database.sqlite con:
+   - Usuario administrador.
+   - Tabla de suplementos.
+   - Suplementos de ejemplo.
+
+ESTRUCTURA DE CARPETAS RECOMENDADA
+----------------------------------
+app/
+  Http/Controllers/
+    AuthController.php       -> Login y logout.
+    AdminController.php      -> Gestión de suplementos.
+    ImcController.php        -> Vista de la calculadora.
+  Models/
+    Suplemento.php           -> Modelo de suplementos.
+    User.php                 -> Modelo de usuarios.
+
+database/
+  migrations/                -> Estructura de las tablas.
+  seeders/                   -> Datos iniciales, como el admin y suplementos.
+  database.sqlite            -> Base de datos local del proyecto.
+
+resources/views/
+  layouts/app.blade.php      -> Plantilla principal con menú y footer.
+  welcome.blade.php          -> Página de inicio.
+  calculadora.blade.php      -> Calculadora IMC.
+  contacto.blade.php         -> Formulario de contacto.
+  reels.blade.php            -> Página de vídeos.
+  login.blade.php            -> Formulario de acceso.
+  admin/
+    index.blade.php          -> Tabla de suplementos.
+    create.blade.php         -> Formulario para crear.
+    edit.blade.php           -> Formulario para editar.
+
+routes/
+  web.php                    -> Rutas principales de la web.
+
+public/
+  Aquí puedes guardar imágenes propias en el futuro, por ejemplo:
+  public/img/
+
+COMANDOS ÚTILES
+---------------
+Para arrancar el proyecto:
+php artisan serve
+
+Si alguna vez quieres reiniciar la base de datos con los datos de ejemplo:
+php artisan migrate:fresh --seed
+
+Si cambias el archivo .env y Laravel no lo detecta:
+php artisan config:clear
+
+NOTAS
+-----
+- El proyecto usa Bootstrap desde CDN, por eso necesita internet para cargar los estilos correctamente.
+- Si en tu ordenador aparece un error de SQLite, activa la extensión pdo_sqlite/sqlite en PHP.
+- Si prefieres usar MySQL, habría que volver a cambiar el .env y crear la base de datos manualmente.
