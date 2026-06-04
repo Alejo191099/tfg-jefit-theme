@@ -35,7 +35,7 @@
             <h1 class="display-4 fw-bold text-outline-neon text-uppercase mb-4">Hablemos</h1>
             <p class="fs-5 text-secondary mb-4">¿Tienes una duda rápida? Contáctame directamente o rellena el formulario para empezar tu plan.</p>
             <div class="d-flex justify-content-center gap-4">
-                <p class="fs-5"><strong class="text-neon">WhatsApp:</strong> +34 600 00 00 00</p>
+                <p class="fs-5"><strong class="text-neon">WhatsApp:</strong> +34 657 19 00 00</p>
                 <p class="fs-5"><strong class="text-neon">Email:</strong> info@jefit.com</p>
             </div>
         </div>

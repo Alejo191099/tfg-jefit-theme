@@ -43,16 +43,22 @@
                         <a class="nav-link" href="{{ route('inicio') }}">Inicio</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ route('calculadora') }}">Calculadora IMC</a>
+                        <a class="nav-link" href="{{ route('calculadora') }}">IMC</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('inicio') }}#planes">Servicios</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('suplementos.index') }}">Suplementos</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('reels') }}">Fitness Reels</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('contacto') }}">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ route('carrito.index') }}">Carrito</a>
                     </li>
                 </ul>
 

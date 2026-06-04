@@ -38,7 +38,7 @@
     <div class="container px-4">
         <h1 class="display-3 fw-bold mb-4">Transforma tu físico con un profesional</h1>
         <p class="lead mb-5 text-light mx-auto" style="max-width: 800px;">
-            Entrenamientos personalizados y asesoramiento nutricional en Madrid. Da el primer paso hacia tu mejor versión.
+            Entrenamientos personalizados y asesoramiento en Madrid. Da el primer paso hacia tu mejor versión.
         </p>
         <div class="d-flex justify-content-center gap-3">
             <a href="{{ route('inicio') }}#planes" class="btn btn-primary btn-lg px-4 fw-bold">Ver Servicios</a>
