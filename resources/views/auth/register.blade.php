@@ -1,10 +1,10 @@
 @extends('layouts.app')
 
-@section('title', 'Iniciar sesión - JeFIT')
+@section('title', 'Registro - JeFIT')
 
 @section('content')
 
-<section class="login-section py-5">
+<section class="register-section py-5">
 
     <div class="container">
 
@@ -13,28 +13,41 @@
             <div class="col-md-6 col-lg-5">
 
                 <div class="text-center mb-4">
-                    <h1 class="fw-bold login-title">
-                        Iniciar sesión
+                    <h1 class="fw-bold register-title">
+                        Crear cuenta
                     </h1>
 
                     <p class="text-muted">
-                        Accede a tu cuenta para ver tus compras y continuar con JeFIT.
+                        Regístrate para ver tus compras y seguir tu actividad en JeFIT.
                     </p>
                 </div>
 
-                <div class="card login-card shadow-sm rounded-4">
+                <div class="card register-card shadow-sm rounded-4">
                     <div class="card-body p-4">
 
-                        {{-- Muestro errores generales del login --}}
-                        @if ($errors->any())
-                            <div class="alert alert-danger">
-                                {{ $errors->first() }}
-                            </div>
-                        @endif
-
-                        {{-- Formulario para iniciar sesión --}}
-                        <form action="{{ route('login.post') }}" method="POST">
+                        {{-- Formulario para registrar un usuario nuevo --}}
+                        <form action="{{ route('register.post') }}" method="POST">
                             @csrf
+
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">
+                                    Nombre
+                                </label>
+
+                                <input type="text"
+                                       name="name"
+                                       id="name"
+                                       class="form-control @error('name') is-invalid @enderror"
+                                       placeholder="Tu nombre"
+                                       value="{{ old('name') }}"
+                                       required>
+
+                                @error('name')
+                                    <div class="invalid-feedback">
+                                        {{ $message }}
+                                    </div>
+                                @enderror
+                            </div>
 
                             <div class="mb-3">
                                 <label for="email" class="form-label fw-bold">
@@ -56,7 +69,7 @@
                                 @enderror
                             </div>
 
-                            <div class="mb-4">
+                            <div class="mb-3">
                                 <label for="password" class="form-label fw-bold">
                                     Contraseña
                                 </label>
@@ -66,7 +79,7 @@
                                            name="password"
                                            id="password"
                                            class="form-control @error('password') is-invalid @enderror"
-                                           placeholder="****"
+                                           placeholder="Mínimo 6 caracteres"
                                            required>
 
                                     {{-- Botón para ver u ocultar la contraseña --}}
@@ -84,17 +97,39 @@
                                 @enderror
                             </div>
 
+                            <div class="mb-4">
+                                <label for="password_confirmation" class="form-label fw-bold">
+                                    Repetir contraseña
+                                </label>
+
+                                <div class="input-group">
+                                    <input type="password"
+                                           name="password_confirmation"
+                                           id="password_confirmation"
+                                           class="form-control"
+                                           placeholder="Repite la contraseña"
+                                           required>
+
+                                    {{-- Botón para ver u ocultar la repetición de contraseña --}}
+                                    <button type="button"
+                                            class="btn btn-outline-success"
+                                            onclick="mostrarPassword('password_confirmation', this)">
+                                        Ver
+                                    </button>
+                                </div>
+                            </div>
+
                             <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">
-                                Entrar
+                                Crear cuenta
                             </button>
 
                         </form>
 
                         <div class="text-center mt-3">
                             <p class="mb-0 text-muted">
-                                ¿No tienes cuenta?
-                                <a href="{{ route('register') }}" class="text-decoration-none text-success fw-bold">
-                                    Regístrate
+                                ¿Ya tienes cuenta?
+                                <a href="{{ route('login') }}" class="text-decoration-none text-success fw-bold">
+                                    Inicia sesión
                                 </a>
                             </p>
                         </div>
@@ -112,38 +147,38 @@
 
 <style>
     /*
-        Estilo propio para el login.
-        Lo dejo aquí porque solo afecta a esta pantalla.
+        Estilo propio para el registro.
+        Mantengo el mismo diseño que el login para que la web sea coherente.
     */
 
-    .login-section {
+    .register-section {
         min-height: 75vh;
         display: flex;
         align-items: center;
     }
 
-    .login-title {
+    .register-title {
         color: #ffffff;
         text-transform: uppercase;
         letter-spacing: 1px;
     }
 
-    .login-card {
+    .register-card {
         background: #15191e;
         border: 1px solid rgba(0, 255, 60, 0.25) !important;
     }
 
-    .login-card label {
+    .register-card label {
         color: #f8f9fa;
     }
 
-    .login-card .form-control {
+    .register-card .form-control {
         background: #1d2126;
         color: #ffffff;
         border: 1px solid #343a40;
     }
 
-    .login-card .form-control:focus {
+    .register-card .form-control:focus {
         background: #1d2126;
         color: #ffffff;
         border-color: #00c832;
@@ -153,9 +188,8 @@
 
 <script>
     /*
-        Esta función cambia el tipo del input.
-        Si está en password, lo pasa a text para poder verlo.
-        Si está en text, lo vuelve a ocultar.
+        Reutilizo esta función para los dos campos de contraseña.
+        Así el usuario puede comprobar si ha escrito bien la contraseña.
     */
     function mostrarPassword(idCampo, boton) {
         const campo = document.getElementById(idCampo);

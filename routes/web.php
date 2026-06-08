@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ImcController;
 use App\Http\Controllers\SuplementoController;
+use App\Http\Controllers\UsuarioController;
 use App\Models\Suplemento;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -18,8 +19,8 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     /*
-        Cojo los suplementos por si más adelante quiero mostrarlos también
-        en la portada de la web.
+        Cojo los suplementos activos por si más adelante quiero mostrarlos
+        también en la portada de la web.
     */
     $suplementos = Suplemento::where('activo', true)->get();
 
@@ -38,9 +39,7 @@ Route::get('/contacto', function () {
 
 /*
     Esta ruta recibe el formulario de contacto.
-
-    De momento solo valida los datos y devuelve un mensaje de confirmación.
-    Más adelante se podría guardar en una tabla de contactos.
+    De momento solo valida los datos y devuelve un mensaje.
 */
 Route::post('/contacto', function (Request $request) {
     $request->validate([
@@ -84,48 +83,119 @@ Route::post('/carrito/confirmar', [CarritoController::class, 'confirmar'])->name
 
 /*
 |--------------------------------------------------------------------------
-| Login y logout
+| Login, registro y logout
 |--------------------------------------------------------------------------
-| Estas rutas controlan el inicio y cierre de sesión.
+| Aquí gestiono el acceso de usuarios y administrador.
 */
 
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])->name('login.post');
 
+Route::get('/register', [AuthController::class, 'showRegister'])->name('register');
+
+Route::post('/register', [AuthController::class, 'register'])->name('register.post');
+
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| Zona del usuario registrado
+|--------------------------------------------------------------------------
+| Aquí el usuario puede ver sus pedidos.
+*/
+
+Route::middleware('auth')->group(function () {
+    Route::get('/mis-compras', [UsuarioController::class, 'misCompras'])->name('usuario.compras');
+});
 
 /*
 |--------------------------------------------------------------------------
 | Zona privada del administrador
 |--------------------------------------------------------------------------
-| Todo lo que está dentro de este grupo pide estar logueado.
-|
-| En tu proyecto, el AdminController es el que gestiona los suplementos:
-| crear, editar, actualizar y eliminar.
+| Primero compruebo que el usuario esté logueado.
+| Luego compruebo que tenga rol de administrador.
 */
 
 Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/', [AdminController::class, 'index'])->name('index');
+    Route::get('/', function () {
+        // Si no es admin, no dejo entrar al panel
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
 
-    Route::get('/crear', [AdminController::class, 'create'])->name('create');
+        return app(AdminController::class)->index();
+    })->name('index');
 
-    Route::post('/guardar', [AdminController::class, 'store'])->name('store');
+    Route::get('/crear', function () {
+        // Solo el administrador puede crear suplementos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
 
-    /*
-        Rutas para revisar los pedidos desde el panel de administrador.
-        Las pongo antes de las rutas con {id} para que Laravel no confunda
-        "pedidos" con el id de un suplemento.
-    */
-    Route::get('/pedidos', [AdminController::class, 'pedidos'])->name('pedidos');
+        return app(AdminController::class)->create();
+    })->name('create');
 
-    Route::get('/pedidos/{pedido}', [AdminController::class, 'verPedido'])->name('pedidos.show');
+    Route::post('/guardar', function (Request $request) {
+        // Solo el administrador puede guardar suplementos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
 
-    Route::put('/pedidos/{pedido}/estado', [AdminController::class, 'actualizarEstadoPedido'])->name('pedidos.estado');
+        return app(AdminController::class)->store($request);
+    })->name('store');
 
-    Route::get('/{id}/editar', [AdminController::class, 'edit'])->name('edit');
+    Route::get('/pedidos', function () {
+        // Solo el administrador puede ver todos los pedidos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
 
-    Route::put('/{id}', [AdminController::class, 'update'])->name('update');
+        return app(AdminController::class)->pedidos();
+    })->name('pedidos');
 
-    Route::delete('/{id}', [AdminController::class, 'destroy'])->name('destroy');
+    Route::get('/pedidos/{pedido}', function ($pedido) {
+        // Solo el administrador puede ver el detalle de los pedidos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->verPedido(\App\Models\Pedido::findOrFail($pedido));
+    })->name('pedidos.show');
+
+    Route::put('/pedidos/{pedido}/estado', function (Request $request, $pedido) {
+        // Solo el administrador puede cambiar el estado de un pedido
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->actualizarEstadoPedido($request, \App\Models\Pedido::findOrFail($pedido));
+    })->name('pedidos.estado');
+
+    Route::get('/{id}/editar', function ($id) {
+        // Solo el administrador puede editar suplementos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->edit($id);
+    })->name('edit');
+
+    Route::put('/{id}', function (Request $request, $id) {
+        // Solo el administrador puede actualizar suplementos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->update($request, $id);
+    })->name('update');
+
+    Route::delete('/{id}', function ($id) {
+        // Solo el administrador puede borrar suplementos
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->destroy($id);
+    })->name('destroy');
 });
