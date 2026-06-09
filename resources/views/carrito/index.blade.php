@@ -130,6 +130,31 @@
                     Esta compra es una simulación. El pedido se guarda para que el administrador pueda revisarlo.
                 </p>
 
+                @guest
+                    {{-- Aviso para explicar la ventaja de iniciar sesión antes de comprar --}}
+                    <div class="alert alert-info">
+                        Puedes comprar como invitado, pero si inicias sesión antes de confirmar el pedido,
+                        podrás verlo después en la sección <strong>Mis compras</strong>.
+                    </div>
+
+                    <div class="d-flex gap-2 flex-wrap mb-3">
+                        <a href="{{ route('login') }}" class="btn btn-outline-dark btn-sm">
+                            Iniciar sesión
+                        </a>
+
+                        <a href="{{ route('register') }}" class="btn btn-outline-dark btn-sm">
+                            Crear cuenta
+                        </a>
+                    </div>
+                @endguest
+
+                @auth
+                    {{-- Si el usuario está logueado, le aviso de que el pedido quedará guardado en su cuenta --}}
+                    <div class="alert alert-success">
+                        Este pedido quedará asociado a tu cuenta y podrás consultarlo en <strong>Mis compras</strong>.
+                    </div>
+                @endauth
+
                 <form action="{{ route('carrito.confirmar') }}" method="POST">
                     @csrf
 

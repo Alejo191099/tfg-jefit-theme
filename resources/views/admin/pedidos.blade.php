@@ -1,5 +1,7 @@
 @extends('layouts.app')
 
+@section('title', 'Pedidos - Panel admin JeFIT')
+
 @section('content')
 
 <section class="container py-5">
@@ -7,7 +9,7 @@
     <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
 
         <div>
-            <h1 class="fw-bold mb-1">
+            <h1 class="fw-bold mb-1 pedidos-title">
                 Pedidos
             </h1>
 
@@ -29,12 +31,28 @@
         </div>
     @endif
 
-    <div class="card shadow-sm border-0 rounded-4">
-        <div class="card-body">
+    <div class="card pedidos-card shadow-sm rounded-4">
+        <div class="card-body p-4">
+
+            <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+                <div>
+                    <h4 class="fw-bold mb-1">
+                        Gestión de pedidos
+                    </h4>
+
+                    <p class="text-muted mb-0">
+                        Desde aquí puedo entrar al detalle de cada pedido y cambiar su estado.
+                    </p>
+                </div>
+
+                <span class="badge bg-success">
+                    {{ $pedidos->count() }} pedidos
+                </span>
+            </div>
 
             <div class="table-responsive">
 
-                <table class="table align-middle mb-0">
+                <table class="table align-middle mb-0 pedidos-table">
 
                     <thead>
                         <tr>
@@ -54,7 +72,7 @@
                         @forelse ($pedidos as $pedido)
 
                             <tr>
-                                <td>
+                                <td class="fw-bold">
                                     #{{ $pedido->id }}
                                 </td>
 
@@ -66,7 +84,7 @@
                                     {{ $pedido->email_cliente }}
                                 </td>
 
-                                <td>
+                                <td class="fw-bold total-pedido">
                                     {{ number_format($pedido->total, 2) }} €
                                 </td>
 
@@ -124,5 +142,44 @@
     </div>
 
 </section>
+
+<style>
+    /*
+        Estilos propios de la pantalla de pedidos del administrador.
+        Mantengo el mismo estilo oscuro y verde de JeFIT.
+    */
+
+    .pedidos-title {
+        color: #ffffff;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    .pedidos-card {
+        background: #15191e;
+        border: 1px solid rgba(0, 255, 60, 0.25) !important;
+    }
+
+    .pedidos-table thead th {
+        color: #00ff3c;
+        border-bottom: 1px solid rgba(0, 255, 60, 0.25);
+        white-space: nowrap;
+    }
+
+    .pedidos-table tbody td {
+        border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+        vertical-align: middle;
+    }
+
+    .total-pedido {
+        color: #00ff3c;
+    }
+
+    @media (max-width: 768px) {
+        .pedidos-table {
+            font-size: 14px;
+        }
+    }
+</style>
 
 @endsection

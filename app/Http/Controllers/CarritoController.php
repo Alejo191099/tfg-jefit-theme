@@ -94,21 +94,50 @@ class CarritoController extends Controller
 
     public function confirmar(Request $request)
     {
-        // Recupero el carrito antes de crear el pedido
+        // Valido los datos básicos del cliente antes de crear el pedido
+        $request->validate([
+            'nombre_cliente' => 'required|string|max:100',
+            'email_cliente' => 'required|email|max:150',
+        ]);
+
+        // Cojo el carrito que está guardado en la sesión
         $carrito = session()->get('carrito', []);
 
-        // Si no hay productos, no dejo confirmar el pedido
-        if (empty($carrito)) {
+        // Si el carrito está vacío, no dejo confirmar el pedido
+        if (count($carrito) === 0) {
             return redirect()
                 ->route('carrito.index')
                 ->with('error', 'El carrito está vacío.');
         }
 
-        // Valido los datos que escribe el cliente en el formulario
-        $request->validate([
-            'nombre_cliente' => 'required|string|max:100',
-            'email_cliente' => 'required|email|max:150',
-        ]);
+        /*
+            Antes de guardar el pedido, reviso otra vez el stock real en la base de datos.
+            Esto es importante porque el carrito puede estar desactualizado.
+        */
+        foreach ($carrito as $producto) {
+            $suplemento = Suplemento::find($producto['id']);
+
+            // Si el suplemento ya no existe, no dejo confirmar el pedido
+            if (!$suplemento) {
+                return redirect()
+                    ->route('carrito.index')
+                    ->with('error', 'Uno de los suplementos del carrito ya no está disponible.');
+            }
+
+            // Si el suplemento está oculto o desactivado, tampoco dejo comprarlo
+            if (!$suplemento->activo) {
+                return redirect()
+                    ->route('carrito.index')
+                    ->with('error', 'El suplemento "' . $suplemento->nombre . '" ya no está disponible.');
+            }
+
+            // Si no hay stock suficiente, aviso al usuario
+            if ($producto['cantidad'] > $suplemento->stock) {
+                return redirect()
+                    ->route('carrito.index')
+                    ->with('error', 'No hay stock suficiente de "' . $suplemento->nombre . '". Stock disponible: ' . $suplemento->stock . '.');
+            }
+        }
 
         // Calculo el total del pedido
         $total = 0;
@@ -117,7 +146,7 @@ class CarritoController extends Controller
             $total = $total + ($producto['precio'] * $producto['cantidad']);
         }
 
-        // Creo el pedido principal en la tabla pedidos
+        // Creo el pedido principal
         $pedido = Pedido::create([
             'user_id' => auth()->id(),
             'nombre_cliente' => $request->nombre_cliente,
@@ -126,37 +155,34 @@ class CarritoController extends Controller
             'estado' => 'pendiente',
         ]);
 
-        // Guardo cada producto del carrito en la tabla pedido_detalles
+        // Guardo cada suplemento dentro del detalle del pedido
         foreach ($carrito as $producto) {
-            PedidoDetalle::create([
-                'pedido_id' => $pedido->id,
-                'suplemento_id' => $producto['id'],
-                'cantidad' => $producto['cantidad'],
-                'precio_unitario' => $producto['precio'],
-                'subtotal' => $producto['precio'] * $producto['cantidad'],
-            ]);
-
-            // Busco el suplemento para descontar el stock comprado
             $suplemento = Suplemento::find($producto['id']);
 
-            if ($suplemento) {
-                $nuevoStock = $suplemento->stock - $producto['cantidad'];
+            $subtotal = $producto['precio'] * $producto['cantidad'];
 
-                // Evito que el stock quede en negativo
-                if ($nuevoStock < 0) {
-                    $nuevoStock = 0;
-                }
+            PedidoDetalle::create([
+                'pedido_id' => $pedido->id,
+                'suplemento_id' => $suplemento->id,
+                'cantidad' => $producto['cantidad'],
+                'precio_unitario' => $producto['precio'],
+                'subtotal' => $subtotal,
+            ]);
 
-                $suplemento->stock = $nuevoStock;
-                $suplemento->save();
-            }
+            /*
+                Después de guardar el detalle, descuento el stock.
+                Como antes ya he comprobado que hay stock suficiente,
+                aquí no debería quedar en negativo.
+            */
+            $suplemento->stock = $suplemento->stock - $producto['cantidad'];
+            $suplemento->save();
         }
 
-        // Vacío el carrito después de confirmar el pedido
+        // Vacío el carrito porque el pedido ya se ha confirmado
         session()->forget('carrito');
 
         return redirect()
             ->route('suplementos.index')
-            ->with('success', 'Pedido realizado correctamente. Te contactaremos para finalizar la compra.');
+            ->with('success', 'Pedido confirmado correctamente. El administrador lo revisará pronto.');
     }
 }

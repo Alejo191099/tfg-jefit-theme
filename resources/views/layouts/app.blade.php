@@ -37,14 +37,36 @@
             border-bottom: 1px solid rgba(0, 255, 60, 0.15);
         }
 
-        .navbar-brand {
+        /*
+        Logo de JeFIT.
+        Lo hago con texto y CSS para que pese poco, se adapte bien a móvil
+        y mantenga el estilo deportivo/neón de la web.
+        */
+        .navbar-brand.logo-jefit {
             font-weight: 900;
             letter-spacing: 2px;
-            color: #ffffff !important;
+            font-size: 1.35rem;
+            display: inline-flex;
+            align-items: center;
+            text-decoration: none;
         }
 
-        .navbar-brand:hover {
-            color: #00ff3c !important;
+        .logo-je {
+            color: #ffffff;
+        }
+
+        .logo-fit {
+            color: #00ff3c;
+            text-shadow: 0 0 8px rgba(0, 255, 60, 0.65);
+        }
+
+        .navbar-brand.logo-jefit:hover .logo-je {
+            color: #00ff3c;
+        }
+
+        .navbar-brand.logo-jefit:hover .logo-fit {
+            color: #ffffff;
+            text-shadow: 0 0 10px rgba(0, 255, 60, 0.8);
         }
 
         .navbar .nav-link {
@@ -194,8 +216,8 @@
     <nav class="navbar navbar-expand-lg navbar-dark shadow-sm">
         <div class="container">
 
-            <a class="navbar-brand text-uppercase" href="{{ route('inicio') }}">
-                JeFIT
+            <a class="navbar-brand logo-jefit" href="{{ route('inicio') }}">
+                <span class="logo-je">JE</span><span class="logo-fit">FIT</span>
             </a>
 
             <button class="navbar-toggler"
