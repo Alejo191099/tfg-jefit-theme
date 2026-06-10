@@ -4,6 +4,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\ImcController;
+use App\Http\Controllers\PlanController;
 use App\Http\Controllers\SuplementoController;
 use App\Http\Controllers\UsuarioController;
 use App\Models\Suplemento;
@@ -55,6 +56,16 @@ Route::post('/contacto', function (Request $request) {
 
 /*
 |--------------------------------------------------------------------------
+| Planes de entrenamiento públicos
+|--------------------------------------------------------------------------
+| Cualquier usuario puede ver las características de cada plan.
+| Para contratar un plan sí tendrá que iniciar sesión.
+*/
+
+Route::get('/planes/{slug}', [PlanController::class, 'show'])->name('planes.show');
+
+/*
+|--------------------------------------------------------------------------
 | Suplementos públicos
 |--------------------------------------------------------------------------
 | Estas rutas son para que cualquier usuario pueda ver los suplementos.
@@ -102,11 +113,17 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 |--------------------------------------------------------------------------
 | Zona del usuario registrado
 |--------------------------------------------------------------------------
-| Aquí el usuario puede ver sus pedidos.
+| Aquí el usuario puede ver sus pedidos y sus planes contratados.
 */
 
 Route::middleware('auth')->group(function () {
     Route::get('/mis-compras', [UsuarioController::class, 'misCompras'])->name('usuario.compras');
+
+    // El usuario puede ver los planes que ha contratado
+    Route::get('/mis-planes', [PlanController::class, 'misPlanes'])->name('usuario.planes');
+
+    // Para contratar un plan, el usuario tiene que estar registrado
+    Route::post('/planes/{slug}/contratar', [PlanController::class, 'contratar'])->name('planes.contratar');
 });
 
 /*
@@ -145,6 +162,10 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
         return app(AdminController::class)->store($request);
     })->name('store');
 
+    /*
+        Rutas de pedidos.
+        Las dejo antes de las rutas con {id} para que Laravel no se confunda.
+    */
     Route::get('/pedidos', function () {
         // Solo el administrador puede ver todos los pedidos
         if (auth()->user()->rol !== 'admin') {
@@ -171,6 +192,19 @@ Route::middleware('auth')->prefix('admin')->name('admin.')->group(function () {
 
         return app(AdminController::class)->actualizarEstadoPedido($request, \App\Models\Pedido::findOrFail($pedido));
     })->name('pedidos.estado');
+
+    /*
+        Ruta para ver los planes contratados por los usuarios.
+        También va antes de {id}/editar para evitar conflictos.
+    */
+    Route::get('/planes-contratados', function () {
+        // Solo el administrador puede ver los planes contratados
+        if (auth()->user()->rol !== 'admin') {
+            abort(403);
+        }
+
+        return app(AdminController::class)->planesContratados();
+    })->name('planes.contratados');
 
     Route::get('/{id}/editar', function ($id) {
         // Solo el administrador puede editar suplementos

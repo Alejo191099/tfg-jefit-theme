@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Pedido;
 use App\Models\Suplemento;
+use App\Models\PlanContratado;
 use Illuminate\Http\Request;
 
 class AdminController extends Controller
@@ -116,5 +117,15 @@ class AdminController extends Controller
             'stock' => 'required|integer|min:0|max:9999',
             'activo' => 'nullable|boolean',
         ]);
+    }
+
+    public function planesContratados()
+    {
+    // Cojo los planes contratados junto con el usuario que los ha contratado
+    $planesContratados = PlanContratado::with('user')
+        ->orderBy('created_at', 'desc')
+        ->get();
+
+    return view('admin.planes-contratados', compact('planesContratados'));
     }
 }

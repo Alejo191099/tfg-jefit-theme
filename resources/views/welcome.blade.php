@@ -104,7 +104,9 @@
                     <div class="card-body">
                         <h3 class="text-neon fw-bold mb-4">PLAN EXCLUSIVO</h3>
                         <p class="text-light mb-4">Tendrás a tu disposición un entrenador personal para ti de forma exclusiva. Atención al 100% en tu técnica y progresión.</p>
-                        <a href="{{ route('contacto') }}" class="text-neon fw-bold text-decoration-none">SABER MÁS &rarr;</a>
+                        <a href="{{ route('planes.show', 'exclusivo') }}" class="plan-link">
+                            SABER MÁS →
+                        </a>
                     </div>
                 </div>
             </div>
@@ -114,7 +116,9 @@
                     <div class="card-body">
                         <h3 class="text-neon fw-bold mb-4">PLAN DÚO</h3>
                         <p class="text-light mb-4">Entrenador en exclusiva para ti y la persona que elijas (amigo/a, familiar o pareja). Motivaos juntos compartiendo gastos.</p>
-                        <a href="{{ route('contacto') }}" class="text-neon fw-bold text-decoration-none">SABER MÁS &rarr;</a>
+                        <a href="{{ route('planes.show', 'duo') }}" class="plan-link">
+                            SABER MÁS →
+                        </a>
                     </div>
                 </div>
             </div>
@@ -124,7 +128,9 @@
                     <div class="card-body">
                         <h3 class="text-neon fw-bold mb-4">GRUPOS REDUCIDOS</h3>
                         <p class="text-light mb-4">Disfruta de un entrenador personal con un máximo de 3 alumnos en cada sesión. Entrena duro en un ambiente inmejorable.</p>
-                        <a href="{{ route('contacto') }}" class="text-neon fw-bold text-decoration-none">SABER MÁS &rarr;</a>
+                        <a href="{{ route('planes.show', 'grupos-reducidos') }}" class="plan-link">
+                            SABER MÁS →
+                        </a>
                     </div>
                 </div>
             </div>

@@ -19,6 +19,10 @@
                 Ver pedidos
             </a>
 
+            <a href="{{ route('admin.planes.contratados') }}" class="btn btn-primary">
+                Planes contratados
+            </a>
+
             {{-- Botón para añadir un suplemento nuevo desde el panel de administrador --}}
             <a href="{{ route('admin.create') }}" class="btn btn-dark">
                 Añadir Suplemento

@@ -330,12 +330,24 @@
                                         </a>
                                     </li>
 
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('admin.planes.contratados') }}">
+                                            Planes contratados
+                                        </a>
+                                    </li>
+
                                 @else
 
                                     {{-- Si es usuario normal, enseño sus compras --}}
                                     <li>
                                         <a class="dropdown-item" href="{{ route('usuario.compras') }}">
                                             Mis compras
+                                        </a>
+                                    </li>
+
+                                    <li>
+                                        <a class="dropdown-item" href="{{ route('usuario.planes') }}">
+                                            Mis planes
                                         </a>
                                     </li>
 
